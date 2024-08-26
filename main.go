@@ -8,10 +8,10 @@ import (
 )
 
 type URL struct {
-	Id           string    `json:"id"`
-	OriginalURL  string    `json:"original_url"`
-	ShortlURL    string    `json:"short_url"`
-	CreationDate time.Time `json:"creation_date"`
+	Id           string `json:"id"`
+	OriginalURL  string `json:"original_url"`
+	ShortlURL    string `json:"short_url"`
+	CreationDate string `json:"creation_date"`
 }
 
 var urlDB = make(map[string]URL)
@@ -27,10 +27,24 @@ func generateShort(OriginalURL string) string {
 	fmt.Println("final string: ", hash[:8])
 	return hash[:8]
 }
+func createURL(OriginalURL string) string {
+	shortURL := generateShort(OriginalURL)
+	id := shortURL
+	currentDate := time.Now()
+	formatted := currentDate.Format("02/01/2006, 3:04:05 PM, Monday")
+	urlDB[id] = URL{
+		Id:           id,
+		OriginalURL:  OriginalURL,
+		ShortlURL:    shortURL,
+		CreationDate: formatted,
+	}
+	return shortURL
+
+}
 
 func main() {
 	fmt.Println("Starting URL shortner.......")
 	defer fmt.Println("Stoping URL shortner........")
-	generateShort("https://github.com/Bishwajit-2810")
+	createURL("https://github.com/Bishwajit-2810")
 
 }

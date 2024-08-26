@@ -3,7 +3,9 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
+	"net/http"
 	"time"
 )
 
@@ -41,10 +43,30 @@ func createURL(OriginalURL string) string {
 	return shortURL
 
 }
+func getURL(id string) (URL, error) {
+	url, ok := urlDB[id]
+	if !ok {
+		return URL{}, errors.New("URL not found")
+
+	}
+	return url, nil
+}
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "GET method")
+}
 
 func main() {
 	fmt.Println("Starting URL shortner.......")
 	defer fmt.Println("Stoping URL shortner........")
 	createURL("https://github.com/Bishwajit-2810")
+
+	// register the handler function to handle all request to the root("/")
+
+	http.HandleFunc("/", handler)
+	// starting http server on port 3000
+	fmt.Println("Starting server on port 3000...")
+	if err := http.ListenAndServe(":3000", nil); err != nil {
+		fmt.Println("Error starting server:", err)
+	}
 
 }

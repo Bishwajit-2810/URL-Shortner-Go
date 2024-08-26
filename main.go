@@ -28,6 +28,8 @@ func generateShort(OriginalURL string) string {
 	hash := hex.EncodeToString(data)
 	fmt.Println("encoded string: ", hash)
 	fmt.Println("final string: ", hash[:8])
+	fmt.Println("shorten url: ", "localhost:3000/redirect/"+hash[:8])
+
 	return hash[:8]
 }
 func createURL(OriginalURL string) string {
@@ -53,7 +55,7 @@ func getURL(id string) (URL, error) {
 	return url, nil
 }
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "GET method")
+	fmt.Fprintln(w, "for url shortner go localhost:3000/shorten")
 }
 
 func ShortlURLHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +76,17 @@ func ShortlURLHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func redirectURLHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/redirect/"):]
+	url, err := getURL(id)
+	if err != nil {
+		http.Error(w, "invalide request", http.StatusNotFound)
+
+	}
+	http.Redirect(w, r, url.OriginalURL, http.StatusFound)
+
+}
+
 func main() {
 	fmt.Println("Starting URL shortner.......")
 	defer fmt.Println("Stoping URL shortner........")
@@ -82,6 +95,7 @@ func main() {
 	// register the handler function to handle all request to the root("/")
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/shorten", ShortlURLHandler)
+	http.HandleFunc("/redirect/", redirectURLHandler)
 	// starting http server on port 3000
 	fmt.Println("Starting server on port 3000...")
 	if err := http.ListenAndServe(":3000", nil); err != nil {

@@ -61,7 +61,6 @@ func main() {
 	createURL("https://github.com/Bishwajit-2810")
 
 	// register the handler function to handle all request to the root("/")
-
 	http.HandleFunc("/", handler)
 	// starting http server on port 3000
 	fmt.Println("Starting server on port 3000...")
